@@ -1,0 +1,33 @@
+<section class="about-us">
+  <h1>About Us</h1>
+  <p>Hello! My name is Akzhol. I am currently learning Angular and building projects as part of my course.</p>
+
+  <h2>Contacts</h2>
+  <ul>
+    <li>Email: ak_sadyk@kbtu.kz/li>
+    <li>GitHub: <a href="https://github.com/AkzholSadyk" target="_blank">AkzholSadyk</a></li>
+    <li>Telegram: @akzholsadyk</li>
+  </ul>
+</section>
+
+
+<h1>{{ title }}</h1>
+<p>{{ mission }}</p>
+
+
+<img [src]="photoUrl" alt="Team photo" width="200">
+<button [disabled]="isButtonDisabled">Disabled Button</button>
+<p [class.highlight]="likes >= 5">Likes: {{ likes }}</p>
+
+
+<button (click)="like()">Like</button>
+<button (click)="toggleMessage()">Toggle Message</button>
+<p *ngIf="showMessage">Thank you for visiting!</p>
+
+
+<input [(ngModel)]="name" placeholder="Enter your name">
+<p>Hello, {{ name }}</p>
+
+<input [(ngModel)]="email" placeholder="Leave your email">
+<button (click)="subscribe()">Subscribe</button>
+<p *ngIf="subscribed">Thanks, {{ email }}, we’ll be in touch!</p>

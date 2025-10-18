@@ -1,0 +1,11 @@
+
+<div class="container">
+  <h2>Car List</h2>
+  <button (click)="loadCars()">Load Cars</button>
+
+  <ul *ngIf="isLoaded">
+    <li *ngFor="let car of cars">
+      <strong>{{ car.car }}</strong> — {{ car.car_model }} ({{ car.car_model_year }})
+    </li>
+  </ul>
+</div>
