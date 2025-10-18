@@ -1,0 +1,15 @@
+<div class="search-container">
+  <input
+    #searchInput
+    type="text"
+    placeholder="🔍 Search movies..."
+    (input)="onSearchChange(searchInput.value)"
+  />
+</div>
+
+<ul class="movies-list">
+  <li *ngFor="let movie of movies">
+    <h3>{{ movie.title }}</h3>
+    <p>{{ movie.description }}</p>
+  </li>
+</ul>
