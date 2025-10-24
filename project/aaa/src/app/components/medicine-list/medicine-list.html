@@ -1,0 +1,26 @@
+<h2>Medicine List for "{{ diagnosis }}"</h2>
+
+
+<div *ngIf="loading">
+  <p>Loading medicines...</p>
+</div>
+
+
+<div *ngIf="!loading && errorMessage">
+  <p>{{ errorMessage }}</p>
+</div>
+
+
+<div *ngIf="!loading && !errorMessage && filteredMedicines.length === 0">
+  <p>No medicines found for "{{ diagnosis }}"</p>
+</div>
+
+
+<div *ngIf="!loading && filteredMedicines.length > 0">
+  <div class="medicine-card" *ngFor="let med of filteredMedicines">
+    <h3>{{ med.openfda?.brand_name?.[0] || 'Unknown' }}</h3>
+    <p><strong>Generic:</strong> {{ med.openfda?.generic_name?.[0] || '—' }}</p>
+    <p><strong>Purpose:</strong> {{ med.purpose?.[0] || '—' }}</p>
+    <button (click)="addToCart(med)">Add to Cart</button>
+  </div>
+</div>
