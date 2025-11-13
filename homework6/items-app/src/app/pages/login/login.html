@@ -1,1 +1,35 @@
-<p>login works!</p>
+<div class="login-container">
+  <h2>Login to Akzhols Market</h2>
+
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        required
+        placeholder="Enter your username"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        placeholder="Enter your password"
+      />
+    </div>
+
+    <button type="submit" [disabled]="!loginForm.valid">Login</button>
+    
+    <a routerLink="/register">Don't have an account? Register here.</a>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </form>
+</div>

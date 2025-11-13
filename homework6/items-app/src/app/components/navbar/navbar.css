@@ -1,30 +1,9 @@
-/* 
+
 
 .navbar {
   display: flex;
   gap: 1.5rem;
-  background: #6e7071;
-  padding: 12px 24px;
-  color: white;
-}
-
-.navbar a {
-  color: white;
-  font-weight: 500;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.navbar a.active {
-  background-color: #b3b6ba;
-} */
-
-/* navbar.component.css */
-
-.navbar {
-  display: flex;
-  gap: 1.5rem;
-  background: #007bff;
+  background: linear-gradient(90deg, #007bff, #00bcd4);
   padding: 12px 24px;
   color: white;
 }
