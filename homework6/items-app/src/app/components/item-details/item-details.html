@@ -1,0 +1,13 @@
+<button (click)="back()">← Back</button>
+
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+
+<div *ngIf="item" class="item-details">
+  <h2>{{ item.title }}</h2>
+  <img [src]="item.thumbnail" alt="{{ item.title }}" />
+  <p>{{ item.description }}</p>
+  <p><b>Category:</b> {{ item.category }}</p>
+  <p><b>Price:</b> ${{ item.price }}</p>
+  <p><b>Rating:</b> {{ item.rating }}</p>
+</div>
