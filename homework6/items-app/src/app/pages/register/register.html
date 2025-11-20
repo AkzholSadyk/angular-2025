@@ -1,25 +1,18 @@
-<div class="register-container">
-  <h2>Register to Akzhols Market</h2>
+<h2>Sign Up</h2>
+<form (ngSubmit)="onSignup()">
+  <label>Email</label>
+  <input [(ngModel)]="email" name="email" placeholder="Email" type="email" required />
 
-  <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" [(ngModel)]="username" required placeholder="Enter username" />
-    </div>
+  <label>Password</label>
+  <input [(ngModel)]="password" name="password" placeholder="Password" type="password" required />
 
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" [(ngModel)]="email" required placeholder="Enter email" />
-    </div>
+  <label>Confirm Password</label>
+  <input [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Confirm Password" type="password" required />
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" [(ngModel)]="password" required placeholder="Enter password" />
-    </div>
+  <button type="submit" [disabled]="loading">Sign Up</button>
 
-    <button type="submit" [disabled]="!registerForm.valid">Register</button>
+  <p *ngIf="error" style="color:red">{{ error }}</p>
+  <p *ngIf="loading">Creating account...</p>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-    <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
-  </form>
-</div>
+  <p>Already have an account? <a routerLink="/login">Login</a></p>
+</form>

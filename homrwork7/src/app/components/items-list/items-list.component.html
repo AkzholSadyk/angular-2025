@@ -1,0 +1,10 @@
+<h2>Items List</h2>
+<input type="text" placeholder="Search..." (input)="onSearch($event)" />
+
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{ error }}</div>
+<div *ngIf="items.length === 0 && !loading">No items found</div>
+
+<div class="items-list">
+  <app-item-card *ngFor="let item of items" [item]="item"></app-item-card>
+</div>

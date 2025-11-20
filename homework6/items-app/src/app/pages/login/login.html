@@ -1,35 +1,15 @@
-<div class="login-container">
-  <h2>Login to Akzhols Market</h2>
+<h2>Login</h2>
+<form (ngSubmit)="onLogin()">
+  <label>Email</label>
+  <input [(ngModel)]="email" name="email" placeholder="Email" type="email" required />
 
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        [(ngModel)]="username"
-        required
-        placeholder="Enter your username"
-      />
-    </div>
+  <label>Password</label>
+  <input [(ngModel)]="password" name="password" placeholder="Password" type="password" required />
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        placeholder="Enter your password"
-      />
-    </div>
+  <button type="submit" [disabled]="loading">Login</button>
 
-    <button type="submit" [disabled]="!loginForm.valid">Login</button>
-    
-    <a routerLink="/register">Don't have an account? Register here.</a>
+  <p *ngIf="error" style="color:red">{{ error }}</p>
+  <p *ngIf="loading">Logging in...</p>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-  </form>
-</div>
+  <p>Don't have an account? <a routerLink="/signup">Sign up</a></p>
+</form>

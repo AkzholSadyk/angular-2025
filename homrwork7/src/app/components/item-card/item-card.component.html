@@ -1,0 +1,6 @@
+<div class="card">
+    <img [src]="item.thumbnail" alt="{{ item.title }}" />
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.description.slice(0,50) }}...</p>
+    <a [routerLink]="['/items', item.id]">Details</a>
+  </div>
