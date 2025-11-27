@@ -1,0 +1,29 @@
+.card, .item-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  padding: 16px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.card:hover, .item-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card img, .item-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.card h3, .item-card h3 {
+  color: #007bff;
+  font-size: 1.2rem;
+}
+
+.card p, .item-card p {
+  font-size: 0.95rem;
+  color: #555;
+}

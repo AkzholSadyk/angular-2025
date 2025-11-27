@@ -1,0 +1,16 @@
+<h2>Cart</h2>
+
+<div *ngIf="cart.length === 0">
+  <p>No items in cart.</p>
+</div>
+
+<div *ngFor="let item of cart; let i = index" class="cart-item">
+  <h3>{{ item.openfda?.brand_name?.[0] || 'No name' }}</h3>
+  <p><b>Generic:</b> {{ item.openfda?.generic_name?.[0] || 'N/A' }}</p>
+  <p><b>Manufacturer:</b> {{ item.openfda?.manufacturer_name?.[0] || 'Unknown' }}</p>
+  <p><b>Purpose:</b> {{ item.purpose?.[0] || 'Not provided' }}</p>
+
+  <button (click)="removeItem(i)">Remove</button>
+</div>
+
+<button *ngIf="cart.length" (click)="clearCart()">Clear All</button>

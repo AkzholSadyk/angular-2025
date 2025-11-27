@@ -1,0 +1,20 @@
+
+
+.navbar {
+  display: flex;
+  gap: 1.5rem;
+  background: linear-gradient(90deg, #007bff, #00bcd4);
+  padding: 12px 24px;
+  color: white;
+}
+
+.navbar a {
+  color: white;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.navbar a.active {
+  background-color: #0056b3;
+}

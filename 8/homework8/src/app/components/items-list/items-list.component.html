@@ -1,0 +1,15 @@
+<input (input)="onSearch($event)" placeholder="Search..." />
+
+<div *ngIf="loading$ | async" class="loading">Loading items...</div>
+
+<div *ngIf="(error$ | async) as err" class="error">
+  Error loading items: {{ err?.message || err | json }}
+</div>
+
+<ul *ngIf="(items$ | async) as items">
+  <li *ngFor="let item of items">
+    <a [routerLink]="['/items', item.id]">
+      <app-item-card [item]="item"></app-item-card>
+    </a>
+  </li>
+</ul>

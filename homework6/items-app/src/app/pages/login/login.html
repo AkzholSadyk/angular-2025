@@ -1,0 +1,15 @@
+<h2>Login</h2>
+<form (ngSubmit)="onLogin()">
+  <label>Email</label>
+  <input [(ngModel)]="email" name="email" placeholder="Email" type="email" required />
+
+  <label>Password</label>
+  <input [(ngModel)]="password" name="password" placeholder="Password" type="password" required />
+
+  <button type="submit" [disabled]="loading">Login</button>
+
+  <p *ngIf="error" style="color:red">{{ error }}</p>
+  <p *ngIf="loading">Logging in...</p>
+
+  <p>Don't have an account? <a routerLink="/signup">Sign up</a></p>
+</form>
