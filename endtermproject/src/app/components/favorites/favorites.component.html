@@ -1,0 +1,30 @@
+<h2>My Favorites</h2>
+
+<div *ngIf="loading">Loading favorites...</div>
+
+<div *ngIf="(favoritesItems$ | async) as items">
+  <div *ngIf="items.length === 0 && !loading">
+    <p>You have no items in your favorites list.</p>
+  </div>
+
+  <ul class="items-list">
+    <li *ngFor="let item of items">
+      <a [routerLink]="['/items', item.id]">
+        <app-item-card [item]="item"></app-item-card>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<style>
+  .items-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  .items-list li {
+    /* Стили для карточки, если нужны */
+  }
+</style>

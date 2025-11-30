@@ -1,0 +1,61 @@
+<h2>Signup</h2>
+<form [formGroup]="signupForm" (ngSubmit)="signup()">
+  
+  <!-- Email Input -->
+  <div>
+    <input type="email" formControlName="email" placeholder="Email" required>
+    <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="error-message">
+      <div *ngIf="f['email'].errors?.['required']">Email is required.</div>
+      <div *ngIf="f['email'].errors?.['email']">Email must be a valid email address.</div>
+    </div>
+  </div>
+
+  <!-- Password Input -->
+  <div>
+    <input type="password" formControlName="password" placeholder="Password" required>
+    <div *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)" class="error-message">
+      <div *ngIf="f['password'].errors?.['required']">Password is required.</div>
+      <div *ngIf="f['password'].errors?.['passwordComplexity']">
+        Password must meet the following criteria:
+        <ul>
+          <li [class.valid]="f['password'].errors?.['passwordComplexity']?.requiredLength === 8 || !f['password'].errors?.['passwordComplexity']">Minimum 8 characters</li>
+          <li [class.valid]="f['password'].errors?.['passwordComplexity']?.hasNumber">At least one number</li>
+          <li [class.valid]="f['password'].errors?.['passwordComplexity']?.hasSpecial">At least one special character</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repeat Password Input -->
+  <div>
+    <input type="password" formControlName="repeatPassword" placeholder="Repeat Password" required>
+    <div *ngIf="f['repeatPassword'].invalid && (f['repeatPassword'].dirty || f['repeatPassword'].touched)" class="error-message">
+      <div *ngIf="f['repeatPassword'].errors?.['required']">Repeat Password is required.</div>
+      <div *ngIf="f['repeatPassword'].errors?.['passwordsMatch']">Passwords must match.</div>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="signupForm.invalid || loading">
+    {{ loading ? 'Signing up...' : 'Signup' }}
+  </button>
+</form>
+
+<p class="error" *ngIf="error">{{ error }}</p>
+
+<style>
+  .error-message {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+  }
+  .error-message ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .error-message li {
+    color: red;
+  }
+  .error-message li.valid {
+    color: green;
+  }
+</style>

@@ -1,0 +1,11 @@
+<div *ngIf="loading$ | async" class="loading">Loading item...</div>
+
+<div *ngIf="(error$ | async) as err" class="error">
+  Error loading item: {{ err?.message || err | json }}
+</div>
+
+<div *ngIf="(item$ | async) as item">
+  <h1>{{ item.title }}</h1>
+  <p>{{ item.description }}</p>
+  <button (click)="goBack()">Back</button>
+</div>

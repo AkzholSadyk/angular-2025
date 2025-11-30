@@ -1,0 +1,68 @@
+<div class="controls">
+  <input (input)="onSearch($event)" placeholder="Search..." />
+
+  <label for="limit-select">Items per page:</label>
+  <select id="limit-select" (change)="onLimitChange($event)" [ngModel]="currentLimit">
+    <option *ngFor="let limit of limitOptions" [value]="limit">{{ limit }}</option>
+  </select>
+</div>
+
+<div *ngIf="loading$ | async" class="loading">Loading items...</div>
+
+<div *ngIf="(error$ | async) as err" class="error">
+  Error loading items: {{ err?.message || err | json }}
+</div>
+
+<ul *ngIf="(items$ | async) as items">
+  <li *ngFor="let item of items">
+    <a [routerLink]="['/items', item.id]">
+      <app-item-card [item]="item"></app-item-card>
+    </a>
+  </li>
+</ul>
+
+<div class="pagination" *ngIf="totalPages > 1">
+  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <ng-container *ngFor="let page of pages">
+    <button (click)="goToPage(page)" [class.active]="page === currentPage">
+      {{ page }}
+    </button>
+  </ng-container>
+
+  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    Next
+  </button>
+</div>
+
+<style>
+  .controls {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 5px;
+  }
+  .pagination button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    cursor: pointer;
+  }
+  .pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  .pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+</style>

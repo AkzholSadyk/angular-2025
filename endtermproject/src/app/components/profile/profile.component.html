@@ -1,0 +1,59 @@
+<div class="profile-container" *ngIf="user$ | async as user; else loading">
+  <div *ngIf="profile$ | async as profile">
+    <h2>Profile</h2>
+
+    <div class="profile-picture-section">
+      <img
+        [src]="profile.photoURL || 'https://via.placeholder.com/150?text=No+Image'"
+        alt="Profile Picture"
+        class="profile-picture"
+      />
+      <p>Email: {{ user.email }}</p>
+      <p>UID: {{ user.uid }}</p>
+
+      <div class="upload-controls">
+        <input type="file" (change)="onFileSelected($event)" accept="image/png, image/jpeg" [disabled]="uploading" />
+        <p *ngIf="uploading">Uploading... Please wait.</p>
+        <p *ngIf="uploadError" class="error">{{ uploadError }}</p>
+      </div>
+    </div>
+
+    <button (click)="logout()">Logout</button>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Loading user info...</p>
+</ng-template>
+
+<style>
+  .profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  .profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #007bff;
+  }
+  .upload-controls {
+    margin-top: 15px;
+    text-align: center;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+</style>

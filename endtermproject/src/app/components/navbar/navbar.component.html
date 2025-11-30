@@ -1,0 +1,16 @@
+
+<nav>
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
+  <a routerLink="/about" routerLinkActive="active">About</a>
+  <a routerLink="/items" routerLinkActive="active">Items</a>
+
+  <ng-container *ngIf="auth.currentUser$ | async as user; else guest">
+    <a routerLink="/profile" routerLinkActive="active">Profile</a>
+    <button (click)="logout()">Logout</button>
+  </ng-container>
+
+  <ng-template #guest>
+    <a routerLink="/login" routerLinkActive="active">Login</a>
+    <a routerLink="/signup" routerLinkActive="active">Signup</a>
+  </ng-template>
+</nav>
