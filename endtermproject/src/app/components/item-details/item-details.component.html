@@ -4,8 +4,252 @@
   Error loading item: {{ err?.message || err | json }}
 </div>
 
-<div *ngIf="(item$ | async) as item">
-  <h1>{{ item.title }}</h1>
-  <p>{{ item.description }}</p>
-  <button (click)="goBack()">Back</button>
+<div *ngIf="(item$ | async) as item" class="item-details">
+  <div class="header-actions">
+    <button (click)="goBack()" class="back-button">← Back</button>
+    <button 
+      (click)="toggleFavorite(item.id)" 
+      class="favorite-button-details"
+      [class.favorite-active]="isFavorite$ | async"
+      [attr.aria-label]="(isFavorite$ | async) ? 'Remove from favorites' : 'Add to favorites'"
+    >
+      <span *ngIf="isFavorite$ | async" class="favorite-icon">❤️</span>
+      <span *ngIf="!(isFavorite$ | async)" class="favorite-icon">🤍</span>
+      <span class="favorite-text">
+        {{ (isFavorite$ | async) ? 'Remove from Favorites' : 'Add to Favorites' }}
+      </span>
+    </button>
+  </div>
+  
+  <div class="item-header">
+    <h1>{{ item.title }}</h1>
+    <p class="item-id">ID: {{ item.id }}</p>
+  </div>
+
+  <div class="item-content">
+    <div class="item-images">
+      <img [src]="item.thumbnail" [alt]="item.title" class="main-image" />
+      <div class="image-gallery" *ngIf="item.images && item.images.length > 0">
+        <img *ngFor="let img of item.images" [src]="img" [alt]="item.title" class="gallery-image" />
+      </div>
+    </div>
+
+    <div class="item-info">
+      <p class="description"><strong>Description:</strong> {{ item.description }}</p>
+      
+      <div class="price-section">
+        <p class="price"><strong>Price:</strong> ${{ item.price }}</p>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <strong>Category:</strong> {{ item.category }}
+        </div>
+        <div class="detail-item">
+          <strong>Brand:</strong> {{ item.brand }}
+        </div>
+        <div class="detail-item">
+          <strong>Rating:</strong> {{ item.rating.rate }} / 5.0
+        </div>
+        <div class="detail-item">
+          <strong>Reviews Count:</strong> {{ item.rating.count }}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+  .item-details {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+
+  .back-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+  }
+
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+
+  .favorite-button-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: white;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .favorite-button-details:hover {
+    background-color: #f8f9fa;
+    border-color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .favorite-button-details.favorite-active {
+    background-color: #fff5f5;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+
+  .favorite-icon {
+    font-size: 20px;
+  }
+
+  .favorite-text {
+    font-weight: 500;
+  }
+
+  .favorite-button-details:active {
+    transform: translateY(0);
+  }
+
+  .item-header {
+    margin-bottom: 30px;
+  }
+
+  .item-header h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+  }
+
+  .item-id {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .item-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  .item-images {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .main-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .image-gallery {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .gallery-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid #ddd;
+  }
+
+  .gallery-image:hover {
+    border-color: #007bff;
+  }
+
+  .item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  .price-section {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .price {
+    font-size: 24px;
+    color: #28a745;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .detail-item {
+    padding: 10px;
+    background-color: white;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+  }
+
+  .detail-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+  }
+
+  .error {
+    color: red;
+    padding: 20px;
+    background-color: #ffe6e6;
+    border-radius: 4px;
+    margin: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .item-content {
+      grid-template-columns: 1fr;
+    }
+
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

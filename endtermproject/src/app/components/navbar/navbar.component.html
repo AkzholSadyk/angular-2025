@@ -5,8 +5,19 @@
   <a routerLink="/items" routerLinkActive="active">Items</a>
 
   <ng-container *ngIf="auth.currentUser$ | async as user; else guest">
-    <a routerLink="/profile" routerLinkActive="active">Profile</a>
-    <button (click)="logout()">Logout</button>
+    <div class="user-section">
+      <ng-container *ngIf="profile$ | async as profile">
+        <img 
+          *ngIf="profile.photoURL" 
+          [src]="profile.photoURL" 
+          alt="Profile" 
+          class="profile-picture-nav"
+        />
+      </ng-container>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+      <a routerLink="/favorites" routerLinkActive="active">Favorites</a>
+      <button (click)="logout()">Logout</button>
+    </div>
   </ng-container>
 
   <ng-template #guest>
@@ -14,3 +25,61 @@
     <a routerLink="/signup" routerLinkActive="active">Signup</a>
   </ng-template>
 </nav>
+
+<style>
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  nav a:hover {
+    background-color: #e9ecef;
+  }
+
+  nav a.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+  }
+
+  .profile-picture-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #007bff;
+    cursor: pointer;
+  }
+
+  button {
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  button:hover {
+    background-color: #c82333;
+  }
+</style>

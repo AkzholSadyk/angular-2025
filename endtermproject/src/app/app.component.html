@@ -4,6 +4,11 @@
   You are currently offline. Some features may not be available.
 </div>
 
+<div *ngIf="mergeMessage$ | async as message" class="merge-message">
+  <span>{{ message }}</span>
+  <button (click)="dismissMergeMessage()" class="close-button">×</button>
+</div>
+
 <router-outlet></router-outlet>
 
 <style>
@@ -16,5 +21,40 @@
     position: sticky;
     top: 0;
     z-index: 1000;
+  }
+
+  .merge-message {
+    background-color: #28a745;
+    color: white;
+    text-align: center;
+    padding: 12px 20px;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .merge-message span {
+    flex: 1;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .close-button:hover {
+    opacity: 1;
   }
 </style>

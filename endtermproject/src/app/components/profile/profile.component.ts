@@ -2,9 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { Observable, switchMap, of, take } from 'rxjs';
+import { Observable, switchMap, of, take, combineLatest, map } from 'rxjs';
 import { User } from 'firebase/auth';
 import { ProfileService, UserProfile } from '../../services/profile.service';
+
+interface ProfileDisplayData {
+  uid: string;
+  email: string;
+  photoURL?: string;
+}
 
 @Component({
   selector: 'app-profile',
@@ -14,8 +20,8 @@ import { ProfileService, UserProfile } from '../../services/profile.service';
   imports: [CommonModule, RouterModule]
 })
 export class ProfileComponent implements OnInit {
-  user$: Observable<User | null>;
-  profile$: Observable<UserProfile | undefined>;
+  user$!: Observable<User | null>;
+  profileData$!: Observable<ProfileDisplayData | null>;
   uploading = false;
   uploadError: string | null = null;
 
@@ -23,20 +29,32 @@ export class ProfileComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private profileService: ProfileService
-  ) {
-    this.user$ = this.auth.currentUser$;
-    this.profile$ = this.user$.pipe(
-      switchMap(user => {
-        if (user) {
-          return this.profileService.getUserProfile(user.uid);
-        }
-        return of(undefined);
-      })
-    );
-  }
+  ) {}
 
   ngOnInit(): void {
-    // Инициализация не требуется, все в конструкторе
+    this.user$ = this.auth.currentUser$;
+    
+    // Объединяем данные из Auth и Firestore
+    this.profileData$ = this.user$.pipe(
+      switchMap(user => {
+        if (!user) {
+          return of(null);
+        }
+        
+        // Сначала убеждаемся, что профиль существует, затем получаем его
+        return this.profileService.ensureUserProfile(user.uid, user.email || '').pipe(
+          switchMap(() => this.profileService.getUserProfile(user.uid)),
+          map(profile => {
+            // Объединяем данные из Firestore с данными из Auth
+            return {
+              uid: user.uid,
+              email: profile?.email || user.email || '',
+              photoURL: profile?.photoURL
+            };
+          })
+        );
+      })
+    );
   }
 
   logout() {
@@ -66,6 +84,7 @@ export class ProfileComponent implements OnInit {
         if (data.error) {
           this.uploadError = data.error;
           this.uploading = false;
+          worker.terminate();
           return;
         }
 
@@ -74,18 +93,31 @@ export class ProfileComponent implements OnInit {
 
         this.user$.pipe(take(1)).subscribe(user => {
           if (user) {
-            this.profileService.uploadProfilePicture(user.uid, compressedFile).subscribe({
+            // Убеждаемся, что профиль существует перед загрузкой фото
+            this.profileService.ensureUserProfile(user.uid, user.email || '').pipe(
+              switchMap(() => this.profileService.uploadProfilePicture(user.uid, compressedFile))
+            ).subscribe({
               next: () => {
                 this.uploading = false;
+                worker.terminate();
                 // Успех, профиль обновится автоматически через Observable
               },
               error: (err) => {
                 this.uploadError = 'Upload failed: ' + err.message;
                 this.uploading = false;
+                worker.terminate();
               }
             });
+          } else {
+            worker.terminate();
           }
         });
+      };
+
+      worker.onerror = (error) => {
+        this.uploadError = 'Worker error: ' + error.message;
+        this.uploading = false;
+        worker.terminate();
       };
 
       worker.postMessage({ file, quality: 0.7 });
@@ -94,7 +126,10 @@ export class ProfileComponent implements OnInit {
       this.uploadError = 'Web Workers not supported. Uploading without compression.';
       this.user$.pipe(take(1)).subscribe(user => {
         if (user) {
-          this.profileService.uploadProfilePicture(user.uid, file).subscribe({
+          // Убеждаемся, что профиль существует перед загрузкой фото
+          this.profileService.ensureUserProfile(user.uid, user.email || '').pipe(
+            switchMap(() => this.profileService.uploadProfilePicture(user.uid, file))
+          ).subscribe({
             next: () => this.uploading = false,
             error: (err) => {
               this.uploadError = 'Upload failed: ' + err.message;

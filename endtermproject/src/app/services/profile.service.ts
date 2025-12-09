@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, doc, setDoc, getDoc, docData } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { Observable, from, switchMap, of } from 'rxjs';
+import { Observable, from, switchMap, of, map, catchError, defer } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface UserProfile {
@@ -27,7 +27,45 @@ export class ProfileService {
 
   getUserProfile(uid: string): Observable<UserProfile | undefined> {
     const docRef = this.getUserDocRef(uid);
-    return docData(docRef) as Observable<UserProfile | undefined>;
+    return docData(docRef).pipe(
+      map(data => {
+        if (!data) return undefined;
+        return data as UserProfile;
+      }),
+      catchError(() => of(undefined))
+    );
+  }
+
+  /**
+   * Создает или обновляет профиль пользователя
+   * Если профиля нет, создает его с email из Auth
+   */
+  ensureUserProfile(uid: string, email: string): Observable<void> {
+    const docRef = this.getUserDocRef(uid);
+    return defer(() => from(getDoc(docRef))).pipe(
+      switchMap(docSnap => {
+        if (!docSnap.exists()) {
+          // Создаем новый профиль
+          const newProfile: UserProfile = { uid, email };
+          return defer(() => from(setDoc(docRef, newProfile))).pipe(
+            map(() => undefined as void)
+          );
+        } else {
+          // Обновляем email, если он изменился
+          const existingData = docSnap.data() as UserProfile;
+          if (existingData.email !== email) {
+            return defer(() => from(setDoc(docRef, { ...existingData, email }, { merge: true }))).pipe(
+              map(() => undefined as void)
+            );
+          }
+          return of(undefined as void);
+        }
+      }),
+      catchError(err => {
+        console.error('Error ensuring user profile:', err);
+        return of(undefined as void);
+      })
+    );
   }
 
   uploadProfilePicture(uid: string, file: File): Observable<string> {

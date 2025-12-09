@@ -4,6 +4,8 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { FavoritesService } from './services/favorites.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,8 +17,18 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 export class AppComponent implements OnInit {
   isOnline = navigator.onLine;
   showOfflineMessage = false;
+  mergeMessage$: Observable<string | null>;
 
-  constructor(private swUpdate: SwUpdate) {}
+  constructor(
+    private swUpdate: SwUpdate,
+    private favoritesService: FavoritesService
+  ) {
+    this.mergeMessage$ = this.favoritesService.mergeMessage$;
+  }
+
+  dismissMergeMessage(): void {
+    this.favoritesService.dismissMergeMessage();
+  }
 
   ngOnInit(): void {
     window.addEventListener('online', () => this.isOnline = true);

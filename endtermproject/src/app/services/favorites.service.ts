@@ -13,6 +13,9 @@ const LOCAL_STORAGE_KEY = 'favorites';
 export class FavoritesService {
   private _favoritesSubject = new BehaviorSubject<number[]>(this.getFavoritesFromLocalStorage());
   public favorites$ = this._favoritesSubject.asObservable();
+  
+  private _mergeMessageSubject = new BehaviorSubject<string | null>(null);
+  public mergeMessage$ = this._mergeMessageSubject.asObservable();
 
   constructor(private firestore: Firestore, private authService: AuthService) {
     this.authService.currentUser$.pipe(
@@ -62,15 +65,41 @@ export class FavoritesService {
 
   private mergeFavorites(uid: string, firestoreFavorites: number[]): void {
     const localFavorites = this.getFavoritesFromLocalStorage();
-    const mergedFavorites = Array.from(new Set([...localFavorites, ...firestoreFavorites]));
-    this.saveFavoritesToFirestore(uid, mergedFavorites).pipe(take(1)).subscribe({
-      next: () => {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        this._favoritesSubject.next(mergedFavorites);
-        console.log('Favorites merged and saved to Firestore.');
-      },
-      error: (err) => console.error('Error merging favorites:', err)
-    });
+    
+    // Проверяем, есть ли локальные favorites для merge
+    if (localFavorites.length > 0) {
+      const mergedFavorites = Array.from(new Set([...localFavorites, ...firestoreFavorites]));
+      const mergedCount = mergedFavorites.length - firestoreFavorites.length;
+      
+      this.saveFavoritesToFirestore(uid, mergedFavorites).pipe(take(1)).subscribe({
+        next: () => {
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+          this._favoritesSubject.next(mergedFavorites);
+          
+          // Показываем сообщение о merge
+          if (mergedCount > 0) {
+            this._mergeMessageSubject.next(
+              `Your ${mergedCount} local favorite${mergedCount > 1 ? 's' : ''} have been merged with your account favorites!`
+            );
+            // Автоматически скрываем сообщение через 5 секунд
+            setTimeout(() => {
+              this._mergeMessageSubject.next(null);
+            }, 5000);
+          }
+        },
+        error: (err) => {
+          console.error('Error merging favorites:', err);
+          this._mergeMessageSubject.next(null);
+        }
+      });
+    } else {
+      // Нет локальных favorites для merge, просто загружаем из Firestore
+      this._favoritesSubject.next(firestoreFavorites);
+    }
+  }
+
+  dismissMergeMessage(): void {
+    this._mergeMessageSubject.next(null);
   }
 
   isFavorite(itemId: number): Observable<boolean> {
