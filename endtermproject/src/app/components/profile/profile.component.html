@@ -1,68 +1,47 @@
-<div class="profile-container" *ngIf="profileData$ | async as profileData; else loading">
-  <h2>Profile</h2>
+<div class="page">
+  <div class="profile-container" *ngIf="profileData$ | async as profileData; else loading">
+    <h2>{{ 'profileTitle' | t }}</h2>
 
-  <div class="profile-picture-section">
-    <img
-      [src]="profileData.photoURL || 'https://via.placeholder.com/150?text=No+Image'"
-      alt="Profile Picture"
-      class="profile-picture"
-    />
-    <p><strong>Email:</strong> {{ profileData.email }}</p>
-    <p><strong>UID:</strong> {{ profileData.uid }}</p>
-
-    <div class="upload-controls">
-      <input type="file" (change)="onFileSelected($event)" accept="image/png, image/jpeg" [disabled]="uploading" />
-      <p *ngIf="uploading">Uploading... Please wait.</p>
-      <p *ngIf="uploadError" class="error">{{ uploadError }}</p>
+    <div class="avatar-block">
+      <div class="avatar-wrapper">
+        <img 
+          class="avatar" 
+          [src]="previewUrl || profileData.photoURL || 'https://via.placeholder.com/200?text=Avatar'" 
+          [alt]="'profilePhoto' | t"
+          [class.uploading]="uploading"
+        />
+        <div class="upload-overlay" *ngIf="uploading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div class="upload-controls">
+        <label class="upload-btn" [class.disabled]="uploading">
+          {{ uploading ? ('uploadingPhoto' | t) : ('uploadPhoto' | t) }}
+          <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" (change)="onFileSelected($event)" [disabled]="uploading" hidden>
+        </label>
+        <button 
+          class="remove-preview-btn" 
+          *ngIf="previewUrl && !uploading" 
+          (click)="removePreview()"
+          type="button"
+        >
+          {{ 'cancel' | t }}
+        </button>
+        <div class="upload-error" *ngIf="uploadError">{{ uploadError }}</div>
+      </div>
     </div>
-  </div>
 
-  <button (click)="logout()">Logout</button>
+    <div class="profile-info">
+      <p><strong>{{ 'email' | t }}</strong> {{ profileData.email }}</p>
+      <p><strong>{{ 'uid' | t }}</strong> {{ profileData.uid }}</p>
+    </div>
+
+    <button (click)="logout()">{{ 'logout' | t }}</button>
+  </div>
 </div>
 
 <ng-template #loading>
   <div class="loading-container">
-    <p>Loading user info...</p>
+    <p>{{ 'loadingProfile' | t }}</p>
   </div>
 </ng-template>
-
-<style>
-  .profile-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  .profile-picture-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .profile-picture {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border: 3px solid #007bff;
-  }
-  .upload-controls {
-    margin-top: 15px;
-    text-align: center;
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-
-  .loading-container {
-    text-align: center;
-    padding: 40px;
-  }
-
-  .profile-picture-section p {
-    margin: 8px 0;
-  }
-</style>

@@ -1,19 +1,106 @@
 <div class="controls">
-  <input (input)="onSearch($event)" placeholder="Search..." />
+  <input (input)="onSearch($event)" [placeholder]="'searchPlaceholder' | t" />
 
-  <label for="limit-select">Items per page:</label>
+  <button type="button" class="filter-toggle-btn" (click)="toggleFilters()">
+    {{ showFilters ? ('hideFilters' | t) : ('showFilters' | t) }}
+  </button>
+
+  <label for="limit-select">{{ 'itemsPerPage' | t }}</label>
   <select id="limit-select" (change)="onLimitChange($event)" [ngModel]="currentLimit">
     <option *ngFor="let limit of limitOptions" [value]="limit">{{ limit }}</option>
   </select>
 </div>
 
-<div *ngIf="loading$ | async" class="loading">Loading items...</div>
+<div class="filters-panel" *ngIf="showFilters">
+  <div class="filters-header">
+    <h3>{{ 'filters' | t }}</h3>
+    <button type="button" class="clear-filters-btn" (click)="clearFilters()">
+      {{ 'clearFilters' | t }}
+    </button>
+  </div>
 
-<div *ngIf="(error$ | async) as err" class="error">
-  Error loading items: {{ err?.message || err | json }}
+  <div class="filters-grid">
+    <div class="filter-group">
+      <label for="category-filter">{{ 'category' | t }}</label>
+      <select 
+        id="category-filter" 
+        [(ngModel)]="filters.category" 
+        (ngModelChange)="onFilterChange()"
+      >
+        <option value="">{{ 'allCategories' | t }}</option>
+        <option *ngFor="let category of categories$ | async" [value]="category">
+          {{ category }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="brand-filter">{{ 'brand' | t }}</label>
+      <select 
+        id="brand-filter" 
+        [(ngModel)]="filters.brand" 
+        (ngModelChange)="onFilterChange()"
+      >
+        <option value="">{{ 'allBrands' | t }}</option>
+        <option *ngFor="let brand of brands$ | async" [value]="brand">
+          {{ brand }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="min-price-filter">{{ 'minPrice' | t }}</label>
+      <input 
+        type="number" 
+        id="min-price-filter" 
+        [(ngModel)]="filters.minPrice" 
+        (ngModelChange)="onFilterChange()"
+        placeholder="0"
+        min="0"
+        step="0.01"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="max-price-filter">{{ 'maxPrice' | t }}</label>
+      <input 
+        type="number" 
+        id="max-price-filter" 
+        [(ngModel)]="filters.maxPrice" 
+        (ngModelChange)="onFilterChange()"
+        placeholder="∞"
+        min="0"
+        step="0.01"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label for="min-rating-filter">{{ 'minRating' | t }}</label>
+      <input 
+        type="number" 
+        id="min-rating-filter" 
+        [(ngModel)]="filters.minRating" 
+        (ngModelChange)="onFilterChange()"
+        placeholder="0"
+        min="0"
+        max="5"
+        step="0.1"
+      />
+    </div>
+  </div>
 </div>
 
-<ul *ngIf="(items$ | async) as items">
+<div *ngIf="loading$ | async" class="loading">{{ 'loadingItems' | t }}</div>
+
+<div *ngIf="(error$ | async) as err" class="error">
+  {{ 'errorLoadingItems' | t }} {{ err?.message || (err | json) }}
+</div>
+
+<div *ngIf="(filteredItems$ | async) as allFilteredItems" class="results-info">
+  <p>{{ 'showingResults' | t }}: {{ allFilteredItems.length }} {{ 'items' | t }}</p>
+</div>
+
+<ul *ngIf="(paginatedItems$ | async) as items">
   <li *ngFor="let item of items">
     <a [routerLink]="['/items', item.id]">
       <app-item-card [item]="item"></app-item-card>
@@ -21,9 +108,13 @@
   </li>
 </ul>
 
+<div *ngIf="(paginatedItems$ | async)?.length === 0 && !(loading$ | async)" class="no-results">
+  <p>{{ 'noItemsFound' | t }}</p>
+</div>
+
 <div class="pagination" *ngIf="totalPages > 1">
-  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
-    Previous
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+      {{ 'previous' | t }}
   </button>
 
   <ng-container *ngFor="let page of pages">
@@ -32,8 +123,8 @@
     </button>
   </ng-container>
 
-  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
-    Next
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+      {{ 'next' | t }}
   </button>
 </div>
 

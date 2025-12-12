@@ -1,28 +1,37 @@
 
 <nav>
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
-  <a routerLink="/about" routerLinkActive="active">About</a>
-  <a routerLink="/items" routerLinkActive="active">Items</a>
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">{{ 'home' | t }}</a>
+  <a routerLink="/about" routerLinkActive="active">{{ 'about' | t }}</a>
+  <a routerLink="/items" routerLinkActive="active">{{ 'items' | t }}</a>
 
   <ng-container *ngIf="auth.currentUser$ | async as user; else guest">
     <div class="user-section">
-      <ng-container *ngIf="profile$ | async as profile">
+      <a routerLink="/profile" routerLinkActive="active" class="profile-link">
         <img 
-          *ngIf="profile.photoURL" 
-          [src]="profile.photoURL" 
+          *ngIf="userAvatar$ | async as avatarUrl; else noAvatar"
+          [src]="avatarUrl" 
           alt="Profile" 
-          class="profile-picture-nav"
+          class="user-avatar"
         />
-      </ng-container>
-      <a routerLink="/profile" routerLinkActive="active">Profile</a>
-      <a routerLink="/favorites" routerLinkActive="active">Favorites</a>
-      <button (click)="logout()">Logout</button>
+        <ng-template #noAvatar>
+          <div class="user-avatar-placeholder">{{ (user.email || 'U')[0].toUpperCase() }}</div>
+        </ng-template>
+        <span class="profile-link-text">{{ 'profile' | t }}</span>
+      </a>
+      <a routerLink="/favorites" routerLinkActive="active">{{ 'favorites' | t }}</a>
+      <button type="button" class="outline" (click)="enableNotifications()">{{ 'enablePush' | t }}</button>
+      <button (click)="logout()">{{ 'logout' | t }}</button>
+      <select [ngModel]="currentLang$ | async" (ngModelChange)="setLang($event)">
+        <option value="en">EN</option>
+        <option value="ru">RU</option>
+        <option value="kz">KZ</option>
+      </select>
     </div>
   </ng-container>
 
   <ng-template #guest>
-    <a routerLink="/login" routerLinkActive="active">Login</a>
-    <a routerLink="/signup" routerLinkActive="active">Signup</a>
+    <a routerLink="/login" routerLinkActive="active">{{ 'login' | t }}</a>
+    <a routerLink="/signup" routerLinkActive="active">{{ 'signup' | t }}</a>
   </ng-template>
 </nav>
 
@@ -58,15 +67,6 @@
     align-items: center;
     gap: 15px;
     margin-left: auto;
-  }
-
-  .profile-picture-nav {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #007bff;
-    cursor: pointer;
   }
 
   button {

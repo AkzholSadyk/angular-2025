@@ -69,18 +69,75 @@ export class ProfileService {
   }
 
   uploadProfilePicture(uid: string, file: File): Observable<string> {
-    const filePath = `profile_pictures/${uid}/${file.name}`;
+    // Генерируем безопасное имя файла (убираем пробелы и специальные символы)
+    const timestamp = Date.now();
+    const fileExtension = file.name.split('.').pop() || 'jpg';
+    const safeFileName = `avatar_${timestamp}.${fileExtension}`;
+    const filePath = `profile_pictures/${uid}/${safeFileName}`;
     const storageRef = ref(this.storage, filePath);
 
     // 1. Загрузка файла в Storage
     return from(uploadBytes(storageRef, file)).pipe(
       // 2. Получение URL
-      switchMap(() => from(getDownloadURL(storageRef))),
+      switchMap(() => from(getDownloadURL(storageRef)) as Observable<string>),
       // 3. Обновление Firestore
-      switchMap(photoURL => {
+      switchMap((photoURL: string) => {
         return this.updateUserProfile(uid, { photoURL }).pipe(
           switchMap(() => of(photoURL)) // Возвращаем URL
         );
+      }),
+      catchError((error: any): Observable<string> => {
+        console.error('Upload error:', error);
+        
+        // Обработка различных типов ошибок
+        let errorMessage = 'Upload failed';
+        
+        if (error?.code) {
+          switch (error.code) {
+            case 'storage/unauthorized':
+            case 'storage/permission-denied':
+              errorMessage = 'Permission denied. Please check Firebase Storage rules. Make sure you are logged in and rules allow uploads to profile_pictures/{userId}/';
+              break;
+            case 'storage/canceled':
+              errorMessage = 'Upload was canceled';
+              break;
+            case 'storage/unknown':
+              errorMessage = 'Unknown error occurred during upload';
+              break;
+            case 'storage/invalid-format':
+              errorMessage = 'Invalid file format. Please use JPEG, PNG or WebP images';
+              break;
+            case 'storage/retry-limit-exceeded':
+              errorMessage = 'Upload failed due to network issues. Please try again';
+              break;
+            default:
+              if (error.message) {
+                errorMessage = error.message;
+              } else if (error.code) {
+                errorMessage = `Upload error: ${error.code}`;
+              }
+          }
+        } else if (error?.message) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
+        // Проверка на HTTP статус коды
+        if (error?.status || error?.statusCode) {
+          const status = error.status || error.statusCode;
+          if (status === 403) {
+            errorMessage = 'Access denied (403). Please check Firebase Storage security rules in Firebase Console.';
+          } else if (status === 404) {
+            errorMessage = 'File not found (404). Please try uploading again.';
+          } else if (status === 504) {
+            errorMessage = 'Upload timeout (504). The file might be too large or network is slow. Please try again.';
+          }
+        }
+        
+        return new Observable<string>(observer => {
+          observer.error(new Error(errorMessage));
+        });
       })
     );
   }

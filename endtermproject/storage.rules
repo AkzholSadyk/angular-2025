@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Правила для аватаров профилей
+    match /profile_pictures/{userId}/{fileName} {
+      // Разрешаем чтение всем (чтобы аватары были публичными)
+      allow read: if true;
+      
+      // Разрешаем загрузку только авторизованным пользователям в свою папку
+      allow write: if request.auth != null && request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024  // Максимум 5MB
+                   && request.resource.contentType.matches('image/.*');
+      
+      // Разрешаем удаление только владельцу файла
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Запрещаем доступ ко всем остальным файлам по умолчанию
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
