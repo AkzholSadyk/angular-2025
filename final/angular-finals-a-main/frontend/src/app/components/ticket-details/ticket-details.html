@@ -1,0 +1,85 @@
+<!-- b -->
+<h1>Ticket: {{ (ticketMerged$ | async)?.id || (id$ | async) }}</h1>
+
+<section class="card ticket-details">
+	<h3>Details</h3>
+	@if (ticketMerged$ | async; as ticket) {
+		<div class="details-grid">
+			<div class="field">
+				<div class="field-label">Title</div>
+				<div class="field-value">{{ ticket.title }}</div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Description</div>
+				<div class="field-value">{{ ticket.description }}</div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Status</div>
+				<div class="field-value"><span class="pill pill--status">{{ ticket.status }}</span></div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Priority</div>
+				<div class="field-value"><span class="pill pill--priority">{{ ticket.priority }}</span></div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Agent</div>
+				<div class="field-value">{{ ticket.agentId || '—' }}</div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Created</div>
+				<div class="field-value">{{ ticket.createdAt }}</div>
+			</div>
+
+			<div class="field">
+				<div class="field-label">Updated</div>
+				<div class="field-value">{{ ticket.updatedAt }}</div>
+			</div>
+		</div>
+	} @else {
+	<div class="loading">Loading ticket…</div>
+	}
+</section>
+
+<section class="card ticket-change">
+	<h3>Change status</h3>
+	<div class="change-form">
+		<select class="select" [formControl]="statusCtrl" [disabled]="((actionLoading | async) || false)">
+			<option value="">Select status</option>
+			<option value="open">open</option>
+			<option value="in_progress">in_progress</option>
+			<option value="resolved">resolved</option>
+			<option value="closed">closed</option>
+		</select>
+
+		<textarea class="textarea" [formControl]="commentCtrl" placeholder="Required comment" [disabled]="((actionLoading | async) || false)"></textarea>
+
+		<div class="actions">
+			<button class="btn" (click)="submitStatusChange()" [disabled]="(actionLoading | async)">Send</button>
+			@if (actionError$ | async; as err) {
+			<div class="error">{{ err }}</div>
+			}
+		</div>
+	</div>
+</section>
+
+<section class="card ticket-logs">
+	<h3>Change log</h3>
+	@if (logs$ | async; as logs) {
+	<ul>
+		@for (l of logs; track l.id) {
+		<li>
+			<div class="log-head"><b>{{ l.action }}</b> <span class="muted">{{ l.createdAt }}</span></div>
+			<div class="log-comment">{{ l.comment || '' }}</div>
+		</li>
+		}
+	</ul>
+	} @else {
+	<div class="loading">Loading logs…</div>
+	}
+</section>
+<!-- b -->

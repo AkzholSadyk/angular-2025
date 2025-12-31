@@ -1,0 +1,128 @@
+.card {
+	background: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 12px;
+	padding: 18px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+	margin-bottom: 16px;
+}
+
+.details-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 8px 24px;
+}
+
+.details-grid div b {
+	margin-right: 6px;
+}
+
+.field {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+}
+
+.field-label {
+	min-width: 100px;
+	font-weight: 700;
+}
+
+.field-value {
+	flex: 1 1 auto;
+}
+
+.pill--status {
+	background: rgba(0, 0, 0, 0.04);
+	border-color: rgba(0, 0, 0, 0.12);
+}
+
+.pill--priority {
+	background: rgba(0, 0, 0, 0.03);
+	border-color: rgba(0, 0, 0, 0.12);
+}
+
+.change-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.change-form .select,
+.change-form .textarea {
+		width: auto;
+	padding: 10px 12px;
+	border-radius: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	background: #fff;
+	box-sizing: border-box;
+}
+
+.change-form .select:focus,
+.change-form .textarea:focus {
+	outline: none;
+	border-color: rgba(0, 0, 0, 0.22);
+	box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.03);
+}
+
+.change-form .textarea {
+	min-height: 90px;
+	resize: vertical;
+}
+
+.change-form .select {
+	width: auto;
+	max-width: 560px;
+	min-width: 220px;
+	height: 40px;
+	padding-right: 36px; /* space for arrow */
+	background-image: linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.6) 50%), linear-gradient(135deg, rgba(0,0,0,0.6) 50%, transparent 50%);
+	background-position: calc(100% - 18px) calc(50% - 6px), calc(100% - 14px) calc(50% - 6px);
+	background-size: 6px 6px, 6px 6px;
+	background-repeat: no-repeat;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.actions .btn {
+	padding: 8px 12px;
+	border-radius: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	background: #fff;
+	cursor: pointer;
+}
+
+.ticket-logs ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ticket-logs li {
+	padding: 12px 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.log-head {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+}
+
+.log-comment {
+	margin-top: 6px;
+	opacity: 0.85;
+}
+
+.error {
+	color: #b00020;
+	margin-top: 8px;
+}
+
+.loading {
+	opacity: 0.8;
+}

@@ -1,0 +1,44 @@
+<h1 class="page-title">Agents</h1>
+
+<section class="filters-row">
+  <div class="filter-switchers">
+    <button class="switcher" [class.active]="activeRange === 'today'" (click)="setRange('today')">Today</button>
+    <button class="switcher" [class.active]="activeRange === 'week'" (click)="setRange('week')">This week</button>
+    <button class="switcher" [class.active]="activeRange === 'month'" (click)="setRange('month')">This month</button>
+  </div>
+
+  <div class="filter-to">
+    <label for="toDate">To:</label>
+    <input id="toDate" type="date" [value]="toDateString" (change)="onToDateChange($event.target.value)" />
+  </div>
+</section>
+
+@if (agents$ | async; as agents) { @if (agents.length === 0) {
+<div class="empty">No agents found.</div>
+} @else {
+<div class="agents-grid">
+  @for (a of agents; track a.id) {
+  <article class="agent-card">
+    <div class="agent-left">
+      @if (a.avatarUrl) {
+      <img class="avatar" [src]="a.avatarUrl" [alt]="a.name" loading="lazy" />
+      } @else {
+      <div class="avatar avatar--placeholder" [style.background]="avatarBg(a.id)">
+        {{ initials(a.name) }}
+      </div>
+      }
+    </div>
+
+    <div class="agent-body">
+      <div class="agent-name">{{ a.name }}</div>
+      <div class="agent-meta">ID: {{ a.id }}</div>
+    </div>
+  </article>
+  }
+</div>
+} } @else {
+<div class="loading">
+  <span class="spinner" aria-hidden="true"></span>
+  Loading…
+</div>
+}
